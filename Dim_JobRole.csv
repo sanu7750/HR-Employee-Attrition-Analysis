@@ -1,0 +1,12 @@
+JobRoleID,JobRole,DepartmentID
+1,Healthcare Representative,1
+2,Sales Executive,2
+3,Laboratory Technician,1
+4,Research Scientist,1
+5,Manager,3
+6,Manufacturing Director,1
+7,Research Director,1
+8,Human Resources,3
+9,Manager,2
+10,Sales Representative,2
+11,Manager,1

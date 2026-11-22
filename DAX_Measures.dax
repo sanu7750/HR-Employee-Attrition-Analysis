@@ -1,0 +1,136 @@
+// ====================================================================
+// DAX MEASURES SPECIFICATION FOR POWER BI
+// Project ID: HR-Employee-Attrition-Analysis
+// Target Model: HR_Analytics_PowerBI_Clean / Fact_Attrition
+// ====================================================================
+
+// --------------------------------------------------------------------
+// SECTION 1: CORE HEADCOUNT & ATTRITION MEASURES
+// --------------------------------------------------------------------
+
+Total Employees = 
+COUNTROWS('HR_Analytics_PowerBI_Clean')
+
+Attrition Count = 
+CALCULATE(
+    COUNTROWS('HR_Analytics_PowerBI_Clean'),
+    'HR_Analytics_PowerBI_Clean'[Attrition] = "Yes"
+)
+
+Active Employees = 
+CALCULATE(
+    COUNTROWS('HR_Analytics_PowerBI_Clean'),
+    'HR_Analytics_PowerBI_Clean'[Attrition] = "No"
+)
+
+Attrition Rate % = 
+DIVIDE(
+    [Attrition Count],
+    [Total Employees],
+    0
+)
+
+Retention Rate % = 
+1 - [Attrition Rate %]
+
+// --------------------------------------------------------------------
+// SECTION 2: DEMOGRAPHICS & TENURE MEASURES
+// --------------------------------------------------------------------
+
+Average Age = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[Age])
+
+Average Company Tenure = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[YearsAtCompany])
+
+Average Years in Current Role = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[YearsInCurrentRole])
+
+Average Years with Current Manager = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[YearsWithCurrManager])
+
+Average Years Since Last Promotion = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[YearsSinceLastPromotion])
+
+// --------------------------------------------------------------------
+// SECTION 3: COMPENSATION & FINANCIAL IMPACT
+// --------------------------------------------------------------------
+
+Average Monthly Income = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[MonthlyIncome])
+
+Median Monthly Income = 
+MEDIAN('HR_Analytics_PowerBI_Clean'[MonthlyIncome])
+
+Total Payroll Monthly = 
+SUM('HR_Analytics_PowerBI_Clean'[MonthlyIncome])
+
+Total Estimated Turnover Cost = 
+CALCULATE(
+    SUM('HR_Analytics_PowerBI_Clean'[EstimatedReplacementCost]),
+    'HR_Analytics_PowerBI_Clean'[Attrition] = "Yes"
+)
+
+Potential Turnover Savings (20% Reduction) = 
+[Total Estimated Turnover Cost] * 0.20
+
+// --------------------------------------------------------------------
+// SECTION 4: RISK & SEGMENTATION MEASURES
+// --------------------------------------------------------------------
+
+Overtime Employee Count = 
+CALCULATE(
+    COUNTROWS('HR_Analytics_PowerBI_Clean'),
+    'HR_Analytics_PowerBI_Clean'[OverTime] = "Yes"
+)
+
+Overtime Attrition Rate % = 
+CALCULATE(
+    [Attrition Rate %],
+    'HR_Analytics_PowerBI_Clean'[OverTime] = "Yes"
+)
+
+Non-Overtime Attrition Rate % = 
+CALCULATE(
+    [Attrition Rate %],
+    'HR_Analytics_PowerBI_Clean'[OverTime] = "No"
+)
+
+Frequent Traveler Attrition Rate % = 
+CALCULATE(
+    [Attrition Rate %],
+    'HR_Analytics_PowerBI_Clean'[BusinessTravel] = "Travel_Frequently"
+)
+
+High Flight Risk Count = 
+CALCULATE(
+    COUNTROWS('HR_Analytics_PowerBI_Clean'),
+    'HR_Analytics_PowerBI_Clean'[OverTime] = "Yes",
+    'HR_Analytics_PowerBI_Clean'[OverallSatisfaction] <= 2.5
+)
+
+// --------------------------------------------------------------------
+// SECTION 5: SATISFACTION & ENGAGEMENT METRICS
+// --------------------------------------------------------------------
+
+Average Job Satisfaction = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[JobSatisfaction])
+
+Average Environment Satisfaction = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[EnvironmentSatisfaction])
+
+Average Work Life Balance = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[WorkLifeBalance])
+
+Average Relationship Satisfaction = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[RelationshipSatisfaction])
+
+Average Overall Satisfaction Score = 
+AVERAGE('HR_Analytics_PowerBI_Clean'[OverallSatisfaction])
+
+// --------------------------------------------------------------------
+// SECTION 6: DYNAMIC KPI TITLE MEASURES
+// --------------------------------------------------------------------
+
+KPI Status Color = 
+IF([Attrition Rate %] > 0.18, "#E05A47", IF([Attrition Rate %] > 0.12, "#F39C12", "#2ECC71"))
